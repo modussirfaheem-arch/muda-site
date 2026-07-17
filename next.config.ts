@@ -2,11 +2,11 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   typescript: {
-    // Allows production builds to complete even with Type errors
+    // This tells Next.js to ignore type errors during the build
     ignoreBuildErrors: true,
   },
   eslint: {
-    // Allows production builds to complete even with ESLint errors
+    // This tells Next.js to ignore linting errors during the build
     ignoreDuringBuilds: true,
   },
 };
