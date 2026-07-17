@@ -1,5 +1,5 @@
 "use client";
-import "./globals.css";
+
 import { ReactLenis } from "@studio-freight/react-lenis";
 
 export default function RootLayout({
@@ -21,9 +21,9 @@ export default function RootLayout({
         />
       </head>
       <body className="bg-[#090909] text-white overflow-x-hidden antialiased selection:bg-[#D4AF37] selection:text-black">
-        {/* Cast children as any to bypass the dependency type conflict */}
+        {/* @ts-ignore: React 19 type mismatch with legacy react-lenis */}
         <ReactLenis root options={{ lerp: 0.05, smoothWheel: true, syncTouch: true }}>
-          {children as any} 
+          {(children as any)}
         </ReactLenis>
       </body>
     </html>
