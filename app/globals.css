@@ -1,24 +1,44 @@
 @import "tailwindcss";
 
+@theme {
+  /* Define your brand identity here */
+  --color-muda-gold: #D4AF37;
+  --color-muda-bg: #090909;
+  
+  /* Custom easings */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
 @layer base {
-  html, body {
+  html {
+    scroll-behavior: smooth;
+    overflow-x: hidden;
+  }
+
+  body {
+    background-color: var(--color-muda-bg);
     color: #ffffff;
     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
   }
 }
 
-.ease-out-expo {
-  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
-}
-
+/* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
 }
+
 ::-webkit-scrollbar-track {
-  background: #090909;
+  background: var(--color-muda-bg);
 }
+
 ::-webkit-scrollbar-thumb {
-  background: #D4AF37;
-  border-radius: 3px;
+  background: var(--color-muda-gold);
+  border-radius: 9999px;
+  border: 1px solid var(--color-muda-bg);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  filter: brightness(1.2);
 }

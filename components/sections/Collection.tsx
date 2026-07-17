@@ -6,24 +6,28 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(ScrollTrigger);
 
+// 1. Define the interface for a single flavor object
+interface Flavor {
+  id: number;
+  name: string;
+  price: string;
+  details: string;
+  desc: string;
+  tone: string;
+}
+
+// 2. Update CollectionProps to include the 'flavors' array
 interface CollectionProps {
+  flavors: Flavor[];
   activeFlavor: number;
   setActiveFlavor: (index: number) => void;
   onOpenDrawer: () => void;
 }
 
-const ITEMS = [
-  { id: 1, name: "MUDA Black Cola", tone: "text-[#D4AF37]", desc: "The foundational core luxury brew. Infused with natural kola nut extracts and pristine raw mountain elements." },
-  { id: 2, name: "MUDA Citrus Surge", tone: "text-yellow-400", desc: "Ultra-crisp yuzu extract fused with organic cold-pressed lime skin distillation mechanics." },
-  { id: 3, name: "MUDA Deep Berry", tone: "text-purple-400", desc: "Concentrated wild alpine blackberries mixed with direct antioxidants for recovery systems." },
-  { id: 4, name: "MUDA Blueberry Blast", tone: "text-blue-500", desc: "Burst into flavor with real berry goodness. Powered by rich natural blueberry pulp extracts and an instant hydrating vitamin C boost." }
-];
-
-export default function Collection({ activeFlavor, setActiveFlavor, onOpenDrawer }: CollectionProps) {
+export default function Collection({ flavors, activeFlavor, setActiveFlavor, onOpenDrawer }: CollectionProps) {
   const sectionRef = useRef<HTMLDivElement>(null);
   
   useGSAP(() => {
-    // Reveal animations
     gsap.fromTo(
       ".flavor-item",
       { opacity: 0, x: -30 },
@@ -58,7 +62,7 @@ export default function Collection({ activeFlavor, setActiveFlavor, onOpenDrawer
           <span className="text-xs uppercase tracking-[0.3em] text-[#D4AF37] font-mono block mb-4">03 // LAB OPTIONS</span>
           <h2 className="text-3xl md:text-5xl font-black uppercase tracking-tighter mb-16">THE FLAVOR MATRIX</h2>
           <div className="flex flex-col gap-4">
-            {ITEMS.map((item, i) => (
+            {flavors.map((item, i) => (
               <button 
                 key={item.id} 
                 onClick={() => setActiveFlavor(i)} 
@@ -77,8 +81,8 @@ export default function Collection({ activeFlavor, setActiveFlavor, onOpenDrawer
         <div className="detail-card bg-white/[0.02] border border-white/[0.05] rounded-3xl p-8 md:p-12 min-h-[400px] flex flex-col justify-between backdrop-blur-md">
           <div>
             <div className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center font-mono text-xs mb-8">0{activeFlavor + 1}</div>
-            <h3 className="text-2xl font-black uppercase mb-4 text-white transition-all duration-500">{ITEMS[activeFlavor].name}</h3>
-            <p className="text-[#CFCFCF] text-sm font-light leading-relaxed max-w-sm transition-all duration-500">{ITEMS[activeFlavor].desc}</p>
+            <h3 className="text-2xl font-black uppercase mb-4 text-white transition-all duration-500">{flavors[activeFlavor].name}</h3>
+            <p className="text-[#CFCFCF] text-sm font-light leading-relaxed max-w-sm transition-all duration-500">{flavors[activeFlavor].desc}</p>
           </div>
           
           <div className="mt-8 flex items-center justify-between">

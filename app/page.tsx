@@ -1,5 +1,6 @@
 "use client";
-import { useState, useEffect } from "react";
+
+import { useState, useEffect, useRef, useCallback } from "react";
 import Navbar from "@/components/ui/Navbar";
 import Hero from "@/components/sections/Hero";
 import About from "@/components/sections/About";
@@ -26,23 +27,33 @@ export default function Home() {
   const [isAllocating, setIsAllocating] = useState(false);
   const [allocationSuccess, setAllocationSuccess] = useState(false);
 
-  // Audio Engine
-  const playClickSound = () => {
+  // Audio Engine: Persistent reference to avoid recreating context
+  const audioCtx = useRef<AudioContext | null>(null);
+
+  const playClickSound = useCallback(() => {
     try {
-      const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+      if (!audioCtx.current) {
+        audioCtx.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+      }
+      
+      const ctx = audioCtx.current;
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
+      
       osc.type = "sine";
       osc.frequency.setValueAtTime(580, ctx.currentTime);
       osc.frequency.exponentialRampToValueAtTime(120, ctx.currentTime + 0.08);
+      
       gain.gain.setValueAtTime(0.04, ctx.currentTime);
       gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.08);
+      
       osc.connect(gain);
       gain.connect(ctx.destination);
+      
       osc.start();
       osc.stop(ctx.currentTime + 0.08);
-    } catch (e) { console.warn("Audio Context error."); }
-  };
+    } catch (e) { console.warn("Audio Context unavailable."); }
+  }, []);
 
   // Keyboard accessibility
   useEffect(() => {
@@ -53,25 +64,26 @@ export default function Home() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isDrawerOpen]);
 
-  const toggleDrawer = (open: boolean) => {
+  const toggleDrawer = useCallback((open: boolean) => {
     playClickSound();
     setIsDrawerOpen(open);
     if (!open) {
       setTimeout(() => { setIsAllocating(false); setAllocationSuccess(false); setEmail(""); }, 500);
     }
-  };
+  }, [playClickSound]);
 
-  const handleFlavorChange = (index: number) => {
-    playClickSound();
-    setActiveFlavor(index);
-  };
-
-  const handleAllocationSubmit = (e: React.FormEvent) => {
+  const handleAllocationSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) return;
     playClickSound();
     setIsAllocating(true);
-    setTimeout(() => { setIsAllocating(false); setAllocationSuccess(true); playClickSound(); }, 1800);
+    
+    // Simulate API delay
+    await new Promise(resolve => setTimeout(resolve, 1800));
+    
+    setIsAllocating(false);
+    setAllocationSuccess(true);
+    playClickSound();
   };
 
   return (
@@ -93,12 +105,12 @@ export default function Home() {
         <Collection 
           flavors={FLAVORS} 
           activeFlavor={activeFlavor} 
-          setActiveFlavor={handleFlavorChange} 
+          setActiveFlavor={(idx) => { playClickSound(); setActiveFlavor(idx); }} 
           onOpenDrawer={() => toggleDrawer(true)} 
         />
         <Footer />
 
-        {/* --- FULLY FUNCTIONAL DRAWER --- */}
+        {/* Drawer Implementation */}
         <div 
           className={`fixed inset-0 z-50 bg-black/60 backdrop-blur-md transition-opacity duration-500 ${isDrawerOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}`} 
           onClick={() => toggleDrawer(false)}
@@ -107,6 +119,7 @@ export default function Home() {
             className={`absolute top-0 right-0 h-full w-full max-w-md bg-[#121212] border-l border-white/[0.05] p-8 md:p-12 flex flex-col justify-between transition-transform duration-500 ease-out-expo ${isDrawerOpen ? "translate-x-0" : "translate-x-full"}`} 
             onClick={(e) => e.stopPropagation()}
           >
+            {/* Drawer Content... */}
             <div>
               <div className="flex justify-between items-center mb-12">
                 <span className="text-[10px] font-mono uppercase tracking-[0.3em] text-[#D4AF37]">SYSTEM ALLOCATION</span>
